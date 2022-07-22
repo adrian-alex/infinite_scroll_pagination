@@ -99,9 +99,16 @@ class PagingController<PageKeyType, ItemType>
 
   /// Appends [newItems] to the previously loaded ones and replaces
   /// the next page's key.
-  void appendPage(List<ItemType> newItems, PageKeyType? nextPageKey) {
+  void appendPage(List<ItemType> newItems, PageKeyType? nextPageKey,
+      {reversed = false}) {
     final previousItems = value.itemList ?? [];
-    final itemList = previousItems + newItems;
+    itemList = [];
+    if (reversed) {
+      previousItems.insertAll(0, newItems);
+      itemList = previousItems;
+    } else {
+      itemList = previousItems + newItems;
+    }
     value = PagingState<PageKeyType, ItemType>(
       itemList: itemList,
       error: null,
@@ -112,6 +119,11 @@ class PagingController<PageKeyType, ItemType>
   /// Appends [newItems] to the previously loaded ones and sets the next page
   /// key to `null`.
   void appendLastPage(List<ItemType> newItems) => appendPage(newItems, null);
+
+  /// Appends [newItems] to the previously loaded ones but in reverse order and
+  /// sets the next page key to `null`.
+  void appendLastPageReversed(List<ItemType> newItems) =>
+      appendPage(newItems, null, reversed: true);
 
   /// Erases the current error.
   void retryLastFailedRequest() {
